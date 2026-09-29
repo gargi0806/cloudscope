@@ -1,0 +1,55 @@
+name: CloudScope CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test-and-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Install SDK
+        run: python -m pip install -r requirements.lock
+      - name: Unit and AWS contract tests
+        run: python -m unittest discover -s tests -v
+      - name: Generate synthetic demo
+        run: python -m cloudscope demo --out reports/demo
+      - name: Check report in Chromium
+        run: |
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+          python scripts/check_report_browser.py
+      - name: Package Lambda with dependencies
+        run: python scripts/build_lambda.py
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.12.2'
+      - name: Validate Terraform
+        run: |
+          terraform -chdir=infra fmt -recursive
+          terraform -chdir=infra init -backend=false -input=false
+          terraform -chdir=infra validate
+      - name: Build and smoke-test Docker
+        run: |
+          docker build -t cloudscope:test .
+          docker run --name cloudscope-smoke cloudscope:test
+          docker cp cloudscope-smoke:/reports/report.json /tmp/docker-report.json
+          python -c "import json; r=json.load(open('/tmp/docker-report.json')); assert r['mode']=='demo' and r['summary']=={'high':1,'medium':4,'low':2}"
+          docker rm cloudscope-smoke
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cloudscope-build
+          path: |
+            dist/cloudscope-lambda.zip
+            reports/demo/
+            reports/screenshots/
+            infra/.terraform.lock.hcl
+          retention-days: 7

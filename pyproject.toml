@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=69,<83"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cloudscope-audit"
+version = "1.0.0"
+description = "Read-only AWS resource audit with Terraform and serverless report delivery"
+requires-python = ">=3.12"
+dependencies = ["boto3==1.43.104"]
+
+[project.scripts]
+cloudscope = "cloudscope.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["cloudscope*"]

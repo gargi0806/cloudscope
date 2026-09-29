@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.0",
+  "project": "CloudScope",
+  "mode": "demo",
+  "account_id": "000000000000",
+  "generated_at": "2026-09-29T10:30:00+00:00",
+  "status": "complete",
+  "regions": [
+    "ap-south-1",
+    "ap-southeast-1"
+  ],
+  "required_tags": [
+    "Owner",
+    "Environment",
+    "Project"
+  ],
+  "resource_counts": {
+    "instances": 3,
+    "volumes": 4,
+    "addresses": 2,
+    "security_groups": 2
+  },
+  "resources_scanned": 11,
+  "summary": {
+    "high": 1,
+    "medium": 4,
+    "low": 2
+  },
+  "findings": [
+    {
+      "id": "5bc283398de1da00",
+      "rule": "SG_PUBLIC_ADMIN",
+      "severity": "high",
+      "title": "Public administration rule",
+      "resource_id": "sg-demo-admin",
+      "name": "legacy-admin",
+      "region": "ap-south-1",
+      "evidence": "TCP 22 from 0.0.0.0/0; TCP 3389 from ::/0. Rule configuration only; attachment and network reachability are not assessed.",
+      "recommendation": "Review dependencies. Prefer Systems Manager Session Manager, or restrict administration to approved source networks."
+    },
+    {
+      "id": "cdb515cae5ea631a",
+      "rule": "EIP_UNASSOCIATED",
+      "severity": "medium",
+      "title": "Unassociated Elastic IP",
+      "resource_id": "eipalloc-demo-spare",
+      "name": "spare-address",
+      "region": "ap-south-1",
+      "evidence": "192.0.2.10 has no association or network interface.",
+      "recommendation": "Check DNS, allowlists and disaster-recovery requirements before releasing it. Review actual billing; this is not a savings estimate."
+    },
+    {
+      "id": "eb3cf45f7985f6b4",
+      "rule": "EBS_UNENCRYPTED",
+      "severity": "medium",
+      "title": "EBS encryption disabled",
+      "resource_id": "vol-demo-legacy",
+      "name": "legacy-data",
+      "region": "ap-south-1",
+      "evidence": "The volume reports Encrypted=false.",
+      "recommendation": "Plan a tested migration using an encrypted snapshot copy and replacement volume. Existing volumes cannot be encrypted in place."
+    },
+    {
+      "id": "a5334bef25d00e4c",
+      "rule": "EBS_UNATTACHED",
+      "severity": "medium",
+      "title": "Unattached EBS volume",
+      "resource_id": "vol-demo-orphan",
+      "name": "old-build-cache",
+      "region": "ap-south-1",
+      "evidence": "80 GiB gp3 volume is available with no attachments.",
+      "recommendation": "Confirm the owner and retention needs. Snapshot if required, then approve deletion manually. Creation time is not detachment time."
+    },
+    {
+      "id": "29d409e1a2b6431b",
+      "rule": "EBS_UNATTACHED",
+      "severity": "medium",
+      "title": "Unattached EBS volume",
+      "resource_id": "vol-demo-backup",
+      "name": "retired-backup",
+      "region": "ap-southeast-1",
+      "evidence": "40 GiB gp3 volume is available with no attachments.",
+      "recommendation": "Confirm the owner and retention needs. Snapshot if required, then approve deletion manually. Creation time is not detachment time."
+    },
+    {
+      "id": "3aaa680117995e3d",
+      "rule": "REQUIRED_TAGS",
+      "severity": "low",
+      "title": "Missing ownership tags",
+      "resource_id": "i-demo-worker",
+      "name": "batch-worker",
+      "region": "ap-south-1",
+      "evidence": "Missing or empty tags: Owner",
+      "recommendation": "Confirm the resource owner, then add the required tags through your infrastructure configuration."
+    },
+    {
+      "id": "d8f65296da7b1823",
+      "rule": "REQUIRED_TAGS",
+      "severity": "low",
+      "title": "Missing ownership tags",
+      "resource_id": "vol-demo-legacy",
+      "name": "legacy-data",
+      "region": "ap-south-1",
+      "evidence": "Missing or empty tags: Project",
+      "recommendation": "Confirm the resource owner, then add the required tags through your infrastructure configuration."
+    }
+  ],
+  "errors": []
+}

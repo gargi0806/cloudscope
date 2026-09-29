@@ -1,0 +1,36 @@
+name: Deploy Lambda code (manual)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: cloudscope-lambda-deployment
+  cancel-in-progress: false
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: aws-demo
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.lock
+      - run: python -m unittest discover -s tests -v
+      - run: python scripts/build_lambda.py
+      - name: Authenticate with GitHub OIDC
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - name: Update existing Lambda code
+        env:
+          FUNCTION_NAME: ${{ vars.AWS_LAMBDA_FUNCTION }}
+        run: |
+          test -n "$FUNCTION_NAME"
+          aws lambda update-function-code --function-name "$FUNCTION_NAME" --zip-file fileb://dist/cloudscope-lambda.zip --no-cli-pager
+          aws lambda wait function-updated --function-name "$FUNCTION_NAME"

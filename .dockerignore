@@ -1,0 +1,7 @@
+*
+!cloudscope/
+!cloudscope/**
+!requirements.lock
+!Dockerfile
+**/__pycache__/
+**/*.pyc

@@ -1,0 +1,8 @@
+aws_region          = "ap-south-1"
+scan_regions        = ["ap-south-1"]
+project_name        = "cloudscope"
+owner               = "gargi-verma"
+alert_email         = "" # Optional: your email; then confirm the SNS subscription.
+schedule_enabled    = false
+schedule_expression = "rate(1 day)"
+required_tags       = ["Owner", "Environment", "Project"]

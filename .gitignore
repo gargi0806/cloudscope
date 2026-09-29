@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+reports/
+dist/
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfplan
+crash.log
+.env
+.aws/
+response.json
+# Commit .terraform.lock.hcl after the first terraform init.
