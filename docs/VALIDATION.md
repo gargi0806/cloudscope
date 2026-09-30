@@ -2,6 +2,8 @@
 
 Build prepared on 29 September 2026. These results describe this delivered source package, not an AWS production deployment.
 
+GitHub Actions [run 36578857204](https://github.com/gargi0806/cloudscope/actions/runs/36578857204) completed successfully on 29 September 2026 for source commit `10f38f5c2aaef7ded7675f1eeaa33b2771b01bf9`. The desktop and mobile captures from its `cloudscope-build` artifact are preserved in [screenshots/](screenshots/README.md).
+
 | Check | Result | Evidence / limitation |
 |---|---|---|
 | Python automated tests | **22 passed** | `python -m unittest discover -s tests -v` under Python 3.12.14; completed without failures or warnings on the final run |
@@ -12,10 +14,11 @@ Build prepared on 29 September 2026. These results describe this delivered sourc
 | Isolated ZIP import | **Passed** | Extracted bundle imported Boto3 and the Lambda handler and evaluated the demo using Python `-S`, without system site-packages |
 | Terraform HCL syntax | **Passed** | All four `.tf` files parsed with `python-hcl2` |
 | Workflow YAML syntax | **Passed** | Both GitHub workflow files parsed successfully |
-| Terraform provider validation/plan | **Not run** | Terraform was unavailable and the binary download timed out; run the supplied CI or local `init`/`validate`/`plan` |
-| Docker build/run | **Not run** | No Docker executable in the delivery environment; CI includes a build and container-output check |
-| Browser rendering/filter interaction | **Not run** | Playwright was available but no browser binary was installed; browser download failed. `scripts/check_report_browser.py` and CI provide desktop/mobile, filter and overflow checks |
-| GitHub Actions execution | **Not run** | Workflows have been supplied, not pushed or executed in a connected repository |
+| Terraform formatting/provider validation | **Passed in CI** | The supplied CI step completed Terraform formatting, backend-free initialization and validation; no account-specific plan or apply was executed |
+| Docker build/run | **Passed in CI** | Image build and container-output smoke test completed successfully |
+| Browser rendering/filter interaction | **Passed in CI** | Chromium checked priority and region filters, search with no matches, restored finding count, mobile overflow, expanded recommendations and JavaScript page errors |
+| Screenshot visual review | **Passed** | Reviewed both full-page PNGs: desktop at 1365 px wide and mobile at 390 px wide; synthetic-data labels, totals, cards and recommendations are visible without clipping |
+| GitHub Actions execution | **Passed** | The linked `test-and-package` job completed successfully, including artifact upload |
 | Live AWS scan, IAM, Terraform apply, SNS delivery and DLQs | **Not run** | No AWS account was connected or provisioned |
 
 ## Test coverage
@@ -39,4 +42,4 @@ python -m playwright install chromium
 python scripts/check_report_browser.py
 ```
 
-The UI is written with responsive CSS, but this delivery does not claim a completed visual review. The source, synthetic demo and local scanner are usable immediately; complete the deployment checks before describing it as a deployed AWS project.
+The desktop and mobile screenshots have been visually reviewed, and the automated browser checks passed in Chromium. This is evidence for the synthetic report UI and build pipeline. Complete the deployment checks before describing the project as deployed to AWS.
