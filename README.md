@@ -157,4 +157,4 @@ See [docs/VALIDATION.md](docs/VALIDATION.md) for current evidence. Suggested ext
 - [CloudWatch alarm notification permissions](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Notify_Users_Alarm_Changes.html)
 - [AWS credentials action and OIDC setup](https://github.com/aws-actions/configure-aws-credentials)
 
-This project is not affiliated with AWS. Screenshots, findings and totals in the supplied demo are synthetic.
+
