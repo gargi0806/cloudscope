@@ -2,7 +2,13 @@
 
 **A real, observable FastAPI workload with a live operations dashboard, Docker packaging, Kubernetes/Kustomize manifests, Terraform-managed AWS EKS infrastructure, and GitHub Actions CI/CD.** Designed as a practical portfolio project with a **local-first ($0 AWS)** demo and an **opt-in paid EKS** path.
 
-> **STATUS:** Source code + local tests are provided; cloud resources have **not been provisioned**, GitHub Actions have **not yet been executed**, and no AWS deployment or performance claim is made. See `docs/portfolio.md` for proof collection.
+> **STATUS (28 Oct 2026):** Local FastAPI health, readiness, status and Prometheus endpoints returned HTTP 200, and GitHub Actions CI passed on `main`. AWS EKS resources have **not been provisioned** and no AWS deployment or performance claim is made. See `docs/portfolio.md` for further evidence goals.
+
+## Dashboard screenshot — verified local run
+
+![CloudScope Pulse dashboard showing a healthy FastAPI service and local runtime metrics](docs/screenshots/dashboard-local.png)
+
+*Actual dashboard HTML rendered in headless Chromium with the JSON status response captured from a locally running FastAPI process on 28 October 2026.* The HTTP endpoints `/health/live`, `/health/ready`, `/api/v1/status`, and `/metrics` all returned **200 OK**. The screenshot shows `environment=local` and `region=local`; this is **not** a screenshot of AWS EKS, a public deployment, or simulated AWS telemetry. Operational values are a point-in-time capture.
 
 ## Where this GitHub copy lives
 
