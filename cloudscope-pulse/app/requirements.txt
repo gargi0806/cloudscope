@@ -1,3 +1,4 @@
-fastapi==0.128.2
+fastapi==0.145.0
+starlette==1.10.0
 uvicorn==0.48.0
 prometheus-client==0.25.0
