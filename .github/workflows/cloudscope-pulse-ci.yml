@@ -36,6 +36,13 @@ jobs:
       - name: Audit Python dependencies
         run: python -m pip_audit -r app/requirements.txt
       - uses: hashicorp/setup-terraform@v3
+      - name: Capture normalized Terraform formatting
+        run: |
+          terraform -chdir=terraform fmt -recursive
+          echo FORMATTED_MAIN_TF_BEGIN
+          base64 -w0 terraform/main.tf
+          echo
+          echo FORMATTED_MAIN_TF_END
       - name: Check Terraform formatting
         run: terraform -chdir=terraform fmt -check -recursive
       - name: Initialize Terraform without state
