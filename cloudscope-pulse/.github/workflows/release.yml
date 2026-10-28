@@ -1,0 +1,72 @@
+name: CD - publish verified commit, optionally deploy to EKS
+on:
+  workflow_run:
+    workflows: ['CI - tests, validation, image scanning']
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: cloudscope-release-main
+  cancel-in-progress: false
+jobs:
+  publish:
+    # Publish ONLY the exact push-to-main commit whose CI run passed.
+    if: >-
+      ${{ github.event.workflow_run.conclusion == 'success' &&
+          github.event.workflow_run.event == 'push' &&
+          github.event.workflow_run.head_branch == 'main' &&
+          github.event.workflow_run.head_repository.full_name == github.repository &&
+          vars.AWS_ROLE_ARN != '' && vars.ECR_REPOSITORY != '' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+      - name: Configure short-lived AWS identity (OIDC)
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          role-session-name: cloudscope-publish
+      - name: ECR login
+        id: login
+        uses: aws-actions/amazon-ecr-login@v2
+      - name: Build and push immutable commit-tagged image
+        env:
+          REGISTRY: ${{ steps.login.outputs.registry }}
+          REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          docker build -t "$REGISTRY/$REPOSITORY:$SHA" .
+          docker push "$REGISTRY/$REPOSITORY:$SHA"
+  deploy:
+    # Requires a trusted self-hosted runner that can reach restricted EKS API.
+    # Never attach this label to a runner that handles untrusted PRs.
+    needs: publish
+    if: ${{ vars.ENABLE_DEPLOY == 'true' && vars.EKS_CLUSTER != '' }}
+    runs-on: [self-hosted, linux, x64, cloudscope-deploy]
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+      - name: Configure short-lived AWS identity (OIDC)
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          role-session-name: cloudscope-deploy
+      - name: Deploy image and verify rollout
+        env:
+          IMAGE: ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}:${{ github.event.workflow_run.head_sha }}
+          EKS_CLUSTER: ${{ vars.EKS_CLUSTER }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+        run: ./scripts/deploy-eks.sh

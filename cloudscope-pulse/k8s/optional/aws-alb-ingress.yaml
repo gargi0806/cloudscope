@@ -1,0 +1,26 @@
+# OPTIONAL PUBLIC ENDPOINT. DO NOT APPLY UNTIL AWS Load Balancer Controller,
+# ACM certificate and public DNS have been configured. ALB accrues charges.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cloudscope-api
+  namespace: cloudscope
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/certificate-arn: "REPLACE_WITH_VALID_ACM_CERTIFICATE_ARN"
+    alb.ingress.kubernetes.io/healthcheck-path: /health/ready
+spec:
+  ingressClassName: alb
+  rules:
+    - host: REPLACE_WITH_YOUR_DOMAIN
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: cloudscope-api
+                port:
+                  number: 80
