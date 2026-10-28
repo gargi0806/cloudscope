@@ -1,0 +1,9 @@
+# Rename this file to terraform.tfvars and EDIT all values. NEVER commit it.
+aws_region              = "ap-south-1"
+public_api_access_cidrs = ["203.0.113.42/32"] # REPLACE with your actual public IP/32; example IP is not real access
+admin_principal_arn     = "arn:aws:iam::123456789012:role/YOUR-ADMIN-ROLE" # REPLACE
+budget_email            = "you@example.com"  # REPLACE
+monthly_budget_usd      = 35
+# IMPORTANT: $35 is not an estimate for a full month of EKS; charges may exceed it.
+github_repository       = "gargi0806/cloudscope"  # REPLACE if your repository differs
+# desired_nodes         = 1  # cheaper short demo; not highly available

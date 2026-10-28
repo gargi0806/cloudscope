@@ -158,3 +158,8 @@ See [docs/VALIDATION.md](docs/VALIDATION.md) for current evidence. Suggested ext
 - [AWS credentials action and OIDC setup](https://github.com/aws-actions/configure-aws-credentials)
 
 
+
+
+## CloudScope Pulse — Kubernetes / DevOps portfolio
+
+A second, independent project is available in [cloudscope-pulse/](cloudscope-pulse/README.md): an observable FastAPI service with Docker, Kubernetes/Kustomize, Terraform definitions for AWS EKS/ECR, and an isolated CI workflow. Its AWS deployment is opt-in, not provisioned automatically; [see the cost and security notes](cloudscope-pulse/docs/cost.md).
