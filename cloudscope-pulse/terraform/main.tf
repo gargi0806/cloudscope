@@ -21,7 +21,7 @@ resource "aws_vpc" "this" {
   cidr_block           = var.vpc_cidr
   enable_dns_hostnames = true
   enable_dns_support   = true
-  tags = { Name = "${local.name}-vpc" }
+  tags                 = { Name = "${local.name}-vpc" }
 }
 
 resource "aws_internet_gateway" "this" {
@@ -156,9 +156,9 @@ resource "aws_cloudwatch_log_group" "eks" {
 }
 
 resource "aws_eks_cluster" "this" {
-  name     = local.name
-  role_arn = aws_iam_role.eks.arn
-  version  = var.eks_version
+  name                      = local.name
+  role_arn                  = aws_iam_role.eks.arn
+  version                   = var.eks_version
   enabled_cluster_log_types = ["api", "audit", "authenticator"]
   access_config {
     authentication_mode                         = "API"

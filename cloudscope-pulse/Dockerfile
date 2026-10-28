@@ -1,7 +1,9 @@
-FROM python:3.12-slim
+FROM python:3.12-alpine3.24
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1
 WORKDIR /app
-RUN groupadd --gid 10001 app && useradd --uid 10001 --gid 10001 --no-create-home app
+RUN apk upgrade --no-cache \
+    && addgroup -S -g 10001 app \
+    && adduser -S -u 10001 -G app -H app
 COPY app/requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt && rm /tmp/requirements.txt
 COPY --chown=10001:10001 app/ /app/
